@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>net.slintes.raspi</groupId>
+    <artifactId>AdafruitLEDBackPack</artifactId>
+    <version>0.2</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.pi4j</groupId>
+            <artifactId>pi4j-core</artifactId>
+            <version>0.0.5-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>oss-snapshots-repo</id>
+            <name>Sonatype OSS Maven Repository</name>
+            <url>https://oss.sonatype.org/content/groups/public</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+
+</project>
