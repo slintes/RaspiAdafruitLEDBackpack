@@ -18,7 +18,7 @@ import java.io.IOException;
 public class Adafruit8x8LEDMatrix extends AdafruitLEDBackPack {
 
     public enum LedColor {
-        OFF, RED, YELLOW, GREEN;
+        OFF, RED, YELLOW, GREEN
     }
 
     /**
@@ -51,13 +51,13 @@ public class Adafruit8x8LEDMatrix extends AdafruitLEDBackPack {
         int[] buffer = getBuffer();
         int oldRow = buffer[row];
         if (color == LedColor.GREEN) {
-            setBufferRow(row, oldRow | 1 << column);
+            setBufferRow(row, oldRow | 1 << column); // lower byte is for green LED
         } else if (color == LedColor.RED) {
-            setBufferRow(row, oldRow | 1 << (column + 8));
+            setBufferRow(row, oldRow | 1 << (column + 8)); // higher byte is for red LED
         } else if (color == LedColor.YELLOW) {
-            setBufferRow(row, oldRow | (1 << (column + 8) | (1 << column)));
+            setBufferRow(row, oldRow | (1 << (column + 8) | (1 << column))); // both LEDs = yellow
         } else if (color == LedColor.OFF) {
-            setBufferRow(row, oldRow & ~(1 << column) & ~(1 << (column + 8)));
+            setBufferRow(row, oldRow & ~(1 << column) & ~(1 << (column + 8))); // switch off both
         }
 
     }
