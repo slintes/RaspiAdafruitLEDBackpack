@@ -1,4 +1,4 @@
-package net.slintes.raspi;
+package net.slintes.raspiMatrix;
 
 import java.io.IOException;
 
@@ -15,34 +15,22 @@ import java.io.IOException;
  * https://github.com/adafruit/Adafruit-Raspberry-Pi-Python-Code/tree/master/Adafruit_LEDBackpack
  *
  */
-public class Adafruit8x8LEDMatrix extends AdafruitLEDBackPack {
-
-    public enum LedColor {
-        OFF, RED, YELLOW, GREEN
-    }
+public class Adafruit8x8LEDMatrix extends AdafruitLEDBackPack implements LEDMatrix, LEDBackPack {
 
     /**
      * construct an 8*8 bicolor LED matrix
      *
      * @param busNr the bus nr, 1 on current Pi revision, 0 for older revisions
-     * @param address the I2C address of the backback (default is 0x0070)
+     * @param address the I2C address of the Adafruit backback (default is 0x0070)
      *
      * @throws IOException
      */
-    public Adafruit8x8LEDMatrix(int busNr, int address) throws IOException {
+    Adafruit8x8LEDMatrix(int busNr, int address) throws IOException {
         super(busNr, address);
     }
 
-    /**
-     * sets a pixel in the matrix
-     *
-     * @param row row number, 0..7
-     * @param column column number, 0..7
-     * @param color the color
-     *
-     * @throws IOException
-     */
-    public void setPixel(int row, int column, LedColor color) throws IOException {
+    @Override
+    public void setPixel(int row, int column, LedColor color) {
 
         if(!isBetween0And7(row) || !isBetween0And7(column) || color == null){
             return;

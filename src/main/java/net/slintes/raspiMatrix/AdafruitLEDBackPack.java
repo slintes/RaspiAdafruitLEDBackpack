@@ -1,4 +1,4 @@
-package net.slintes.raspi;
+package net.slintes.raspiMatrix;
 
 import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CDevice;
@@ -23,7 +23,7 @@ import java.io.IOException;
  * https://github.com/adafruit/Adafruit-Raspberry-Pi-Python-Code/tree/master/Adafruit_LEDBackpack
  *
  */
-public class AdafruitLEDBackPack {
+public class AdafruitLEDBackPack implements LEDBackPack {
 
     // Registers
     private static final int HT16K33_REGISTER_DISPLAY_SETUP        = 0x80;
@@ -37,23 +37,8 @@ public class AdafruitLEDBackPack {
     private static final int HT16K33_BLINKRATE_1HZ                 = 0x05;
     private static final int HT16K33_BLINKRATE_HALFHZ              = 0x07;
 
-    public enum BlinkRate {
-
-        DISPLAY_OFF(HT16K33_BLINKRATE_DISPLAY_OFF),
-        BLINK_OFF(HT16K33_BLINKRATE_OFF),
-        TWO_HZ(HT16K33_BLINKRATE_2HZ),
-        ONE_HZ(HT16K33_BLINKRATE_1HZ),
-        HALF_HZ(HT16K33_BLINKRATE_HALFHZ);
-
-        int value;
-        BlinkRate(int value){
-            this.value = value;
-        }
-
-    }
-
     // Display buffer (8x16-bits)
-    private static int[] BUFFER = {0, 0, 0, 0, 0, 0, 0, 0};
+    private int[] BUFFER = {0, 0, 0, 0, 0, 0, 0, 0};
 
     private final I2CBus i2CBus;
     private final I2CDevice i2cDevice;
@@ -83,31 +68,38 @@ public class AdafruitLEDBackPack {
         clear(true);
     }
 
-    public void setBlinkRate(BlinkRate blinkRate) throws IOException {
-        i2cDevice.write(HT16K33_REGISTER_DISPLAY_SETUP | blinkRate.value, (byte)0x00);
+    @Override
+    public void setBlinkRate(BlinkRate blinkRate) {
+
+        int blinkrateValue;
+        switch (blinkRate){
+            case DISPLAY_OFF: blinkrateValue = HT16K33_BLINKRATE_DISPLAY_OFF; break;
+            case BLINK_OFF: blinkrateValue = HT16K33_BLINKRATE_OFF; break;
+            case HALF_HZ: blinkrateValue = HT16K33_BLINKRATE_HALFHZ; break;
+            case ONE_HZ: blinkrateValue = HT16K33_BLINKRATE_1HZ; break;
+            case TWO_HZ: blinkrateValue = HT16K33_BLINKRATE_2HZ; break;
+            default: blinkrateValue = HT16K33_BLINKRATE_OFF;
+        }
+        try {
+            i2cDevice.write(HT16K33_REGISTER_DISPLAY_SETUP | blinkrateValue, (byte)0x00);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    /**
-     * sets the brightness
-     *
-     * @param brightness the brightness, 0..15
-     *
-     * @throws IOException
-     */
-    public void setBrightness(int brightness) throws IOException {
+    @Override
+    public void setBrightness(int brightness) {
         if(brightness < 0) brightness = 0;
         else if (brightness > 15) brightness = 15;
-        i2cDevice.write(HT16K33_REGISTER_DIMMING | brightness, (byte)0x00);
+        try {
+            i2cDevice.write(HT16K33_REGISTER_DIMMING | brightness, (byte)0x00);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    /**
-     * clears the buffer
-     *
-     * @param flush display empty buffer immediately
-     *
-     * @throws IOException
-     */
-    public void clear(boolean flush) throws IOException {
+    @Override
+    public void clear(boolean flush) {
         BUFFER = new int[]{0,0,0,0,0,0,0,0};
         if(flush){
             writeDisplay();
@@ -119,10 +111,8 @@ public class AdafruitLEDBackPack {
      *
      * @param row the row number, 0..7
      * @param value the value
-     *
-     * @throws IOException
      */
-    public void setBufferRow(int row, int value) throws IOException {
+    protected void setBufferRow(int row, int value) {
         setBufferRow(row, value, false);
     }
 
@@ -132,10 +122,8 @@ public class AdafruitLEDBackPack {
      * @param row the row number, 0..7
      * @param value the value
      * @param flush write buffer to display immediately
-     *
-     * @throws IOException
      */
-    public void setBufferRow(int row, int value, boolean flush) throws IOException {
+    protected void setBufferRow(int row, int value, boolean flush) {
 
         if(!isBetween0And7(row)) return;
         BUFFER[row] = value;
@@ -153,23 +141,23 @@ public class AdafruitLEDBackPack {
      *
      * @return current buffer
      */
-    public int[] getBuffer(){
+    protected int[] getBuffer(){
         return BUFFER;
     }
 
-    /**
-     * writes content of buffer to the LED Backpack
-     *
-     * @throws IOException
-     */
-    public void writeDisplay() throws IOException {
+    @Override
+    public void writeDisplay() {
 
         byte[] bytes = new byte[16]; // we need 2 bytes for each row
         for (int i = 0; i < 8; i++) { // iterate rows
             bytes[i*2] = (byte)(BUFFER[i] & 0xFF); // lower byte for green LED
             bytes[i*2+1] = (byte)((BUFFER[i] >> 8) & 0xFF); // higher byte for red LED
         }
-        i2cDevice.write(0x00, bytes, 0, 16);
+        try {
+            i2cDevice.write(0x00, bytes, 0, 16);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
