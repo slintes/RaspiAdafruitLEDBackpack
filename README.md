@@ -1,7 +1,9 @@
 Library for accessing Adafruit's LED Backpacks from Java on a Raspberry Pi
 
-see an example in action at https://www.youtube.com/watch?v=0miZit94TEU
-and https://github.com/slintes/RaspiFunWithAmpelAndMatrix
+see it in action at
+
+* http://www.youtube.com/watch?v=0miZit94TEU and https://github.com/slintes/RaspiFunWithAmpelAndMatrix
+* http://www.youtube.com/watch?v=g_Mn1BiplmY and https://github.com/slintes/RaspiDroid
 
 Links:
 
