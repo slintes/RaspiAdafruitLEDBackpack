@@ -68,18 +68,28 @@ public class Adafruit8x8LEDMatrix extends AdafruitLEDBackPack implements LEDMatr
 
     @Override
     public void writeString(String text, int durationPerChar, boolean doScroll) {
+        if(doScroll){
+            writeStringScroll(text, durationPerChar);
+        }
+        else {
+            writeStringNoScroll(text, durationPerChar);
+        }
+    }
+
+    private void writeStringNoScroll(String text, int durationPerChar) {
 
         clear(true);
 
         for(char c : text.toCharArray()){
 
             int i = c;
-            i -= 31;
+            i -= 31; // offset in Font8x8
 
             int[] buffer = Font8x8.FONT8x8[i];
 
             int row = 0;
             for(int bufferRow : buffer){
+                // fit it to our hardware setup (pins of LED matrix to the left
                 bufferRow = Integer.reverse(bufferRow);
                 bufferRow = Integer.reverseBytes(bufferRow);
                 setBufferRow(row++, bufferRow);
@@ -91,12 +101,63 @@ public class Adafruit8x8LEDMatrix extends AdafruitLEDBackPack implements LEDMatr
                 Thread.sleep(durationPerChar);
             } catch (InterruptedException e) {}
 
-            clear(true);
 
+            // make flash the chars, so you can see double chars
+            clear(true);
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {}
 
+        }
+
+        clear(true);
+
+    }
+
+    private void writeStringScroll(String text, int durationPerChar) {
+
+        clear(true);
+
+        // add a space before and after text
+        text = " " + text + " ";
+
+        for(int pos = 0; pos < text.length()-1; pos++){
+
+            // get buffer for current and next char
+            int i1 = text.charAt(pos) - 31;
+            int[] buffer1 = Font8x8.FONT8x8[i1];
+
+            int i2 = text.charAt(pos+1) -31;
+            int[] buffer2 = Font8x8.FONT8x8[i2];
+
+            // we will scroll through the 8 LED columns
+            for(int col = 0; col < 8; col++){
+                for(int row = 0; row < 8; row++){
+
+                    // fit it to our hardware setup (pins of LED matrix to the left
+                    int bufferRow1 = Integer.reverse(buffer1[row]);
+                    bufferRow1 = Integer.reverseBytes(bufferRow1);
+
+                    int bufferRow2 = Integer.reverse(buffer2[row]);
+                    bufferRow2 = Integer.reverseBytes(bufferRow2);
+
+                    // shift current row by col
+                    bufferRow1 = bufferRow1 >>> col;
+                    // shift row of next char by 8-col
+                    bufferRow2 = bufferRow2 << (8-col);
+
+                    // now combine them, but only use lower 8 bits
+                    int bufferRow = 0xFF & (bufferRow1 | bufferRow2);
+                    setBufferRow(row, bufferRow);
+                    writeDisplay();
+
+                }
+
+                try {
+                    Thread.sleep(durationPerChar / 8);
+                } catch (InterruptedException e) {}
+
+            }
         }
 
         clear(true);
