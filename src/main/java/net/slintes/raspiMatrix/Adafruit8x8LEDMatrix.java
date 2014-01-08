@@ -65,4 +65,42 @@ public class Adafruit8x8LEDMatrix extends AdafruitLEDBackPack implements LEDMatr
         }
 
     }
+
+    @Override
+    public void writeString(String text, int durationPerChar, boolean doScroll) {
+
+        clear(true);
+
+        for(char c : text.toCharArray()){
+
+            int i = c;
+            i -= 31;
+
+            int[] buffer = Font8x8.FONT8x8[i];
+
+            int row = 0;
+            for(int bufferRow : buffer){
+                bufferRow = Integer.reverse(bufferRow);
+                bufferRow = Integer.reverseBytes(bufferRow);
+                setBufferRow(row++, bufferRow);
+            }
+
+            writeDisplay();
+
+            try {
+                Thread.sleep(durationPerChar);
+            } catch (InterruptedException e) {}
+
+            clear(true);
+
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {}
+
+        }
+
+        clear(true);
+
+    }
+
 }

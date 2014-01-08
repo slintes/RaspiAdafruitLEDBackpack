@@ -53,4 +53,9 @@ public class SysOutLEDMatrix implements LEDMatrix, LEDBackPack {
     public void writeDisplay() {
         System.out.println("matrix: writeDisplay");
     }
+
+    @Override
+    public void writeString(String text, int durationPerChar, boolean doScroll) {
+        System.out.println("matrix: writeText: " + text);
+    }
 }

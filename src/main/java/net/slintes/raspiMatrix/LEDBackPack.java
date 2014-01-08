@@ -27,8 +27,6 @@ package net.slintes.raspiMatrix;
  */
 public interface LEDBackPack {
 
-
-
     /**
      * enum for blink rate
      */

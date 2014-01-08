@@ -42,6 +42,15 @@ public interface LEDMatrix extends LEDBackPack {
      * @param column column number, 0..7
      * @param color the color
      */
-    void setPixel(int row, int column, LedColor color);
+    public void setPixel(int row, int column, LedColor color);
+
+    /**
+     * write a string
+     *
+     * @param text the string to write
+     * @param durationPerChar duration in ms for 1 char
+     * @param doScroll scroll chars if true
+     */
+    public void writeString(String text, int durationPerChar, boolean doScroll);
 
 }
