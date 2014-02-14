@@ -72,7 +72,7 @@ public class AdafruitLEDBackPack implements LEDBackPack {
         i2cDevice = i2CBus.getDevice(address);
 
         // Turn the oscillator on
-        i2cDevice.write(HT16K33_REGISTER_SYSTEM_SETUP | 0x01, (byte)0x00);
+        i2cDevice.write((byte) (HT16K33_REGISTER_SYSTEM_SETUP | 0x01));
 
         // turn display on and blink rate off
         setBlinkRate(BlinkRate.BLINK_OFF);
@@ -97,7 +97,7 @@ public class AdafruitLEDBackPack implements LEDBackPack {
             default: blinkrateValue = HT16K33_BLINKRATE_OFF;
         }
         try {
-            i2cDevice.write(HT16K33_REGISTER_DISPLAY_SETUP | blinkrateValue, (byte)0x00);
+            i2cDevice.write((byte) (HT16K33_REGISTER_DISPLAY_SETUP | blinkrateValue));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -108,7 +108,7 @@ public class AdafruitLEDBackPack implements LEDBackPack {
         if(brightness < 0) brightness = 0;
         else if (brightness > 15) brightness = 15;
         try {
-            i2cDevice.write(HT16K33_REGISTER_DIMMING | brightness, (byte)0x00);
+            i2cDevice.write((byte) (HT16K33_REGISTER_DIMMING | brightness));
         } catch (IOException e) {
             e.printStackTrace();
         }
